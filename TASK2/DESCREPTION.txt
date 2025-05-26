@@ -1,0 +1,31 @@
+EASSY CALCULATION - Flutter Math Utility App
+
+
+A simple and elegant Flutter-based math utility app offering multiple calculation tools and features with a clean UI and dark mode support.
+
+Features
+Multiplication Table: Generate multiplication tables for any number with customizable range.
+
+Additive Table: Create additive sequences for a given number.
+
+Square & Cube Calculator: Calculate the square and cube of any number.
+
+Root Calculator: Find the square root of a number with proper validation.
+
+Percentage Calculator: Calculate percentage values easily.
+
+Arithmetic Operations: Add, subtract, multiply, and divide two numbers with instant results.
+
+Advanced Tools (via calculator panel):
+
+Factorial Calculator
+
+Fibonacci Series Generator
+
+Armstrong Number Checker
+
+Palindrome Checker
+
+Multiplication & Division between two numbers
+
+Dark Mode Support: Toggle between light and dark themes for better usability.
