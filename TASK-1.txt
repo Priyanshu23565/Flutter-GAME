@@ -1,0 +1,56 @@
+# Flutter Calculator & Tables App
+
+## Description
+Ye Flutter app kuch important mathematical operations aur tables provide karta hai:
+
+- Multiplication table with user-defined range
+- Table with step increments
+- Square of a number
+- Cube of a number
+- Square root calculation
+- Percentage calculation
+- Addition, Subtraction, Multiplication, Division of two numbers
+- Dropdown se operation select karna
+- Animated and clean UI
+
+## Features
+- User-friendly dropdown menu se operations select karo
+- Dynamic input fields for range and numbers
+- Result instantly display hota hai
+- Flutter ka Material Design use kiya gaya hai
+- Responsive layout
+
+## How to Run Locally
+
+### Prerequisites
+- Flutter SDK installed ([Flutter installation guide](https://flutter.dev/docs/get-started/install))
+- Android Studio with Android SDK configured (for Android builds)
+- A device/emulator for testing
+
+### Steps
+
+1. Clone this repo:
+   ```bash
+   git clone <your-repo-url>
+   cd <your-project-folder>
+
+
+
+
+
+
+--------------------------------------------
+
+
+
+-->
+PS D:\PPP\APP\Starting Zero\First\Hello> cd hello
+PS D:\PPP\APP\Starting Zero\First\Hello\hello> flutter pub get
+
+
+--->>
+
+
+PS D:\PPP\APP\Starting Zero\First\Hello\hello> flutter run 
+
+
