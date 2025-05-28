@@ -1,18 +1,94 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'package:flutter/services.dart';
+
+
+// import 'package:share_plus/share_plus.dart';
+// import 'package:flutter/material.dart';
+// import 'package:share_plus/share_plus.dart';
+
+void _showResult(BuildContext context, String result) {
+  showModalBottomSheet(
+    context: context,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+                Icons.check_circle_outline, size: 40, color: Colors.green),
+            const SizedBox(height: 10),
+            const Text(
+              'Result',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const Divider(),
+            const SizedBox(height: 10),
+            Text(
+              result,
+              style: const TextStyle(fontSize: 18, color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.copy),
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: result));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Copied to clipboard')),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.share),
+                  onPressed: () {
+                    // Share.share(result);
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+// Main MyApp Widget
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool isDarkMode = false;
+
+  void toggleTheme() {
+    setState(() {
+      isDarkMode = !isDarkMode;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Enhanced Math App',
+      title: 'EASSY CALCULATION',
       theme: ThemeData(
+        brightness: Brightness.light,
         primarySwatch: Colors.deepPurple,
         scaffoldBackgroundColor: Colors.grey[100],
         appBarTheme: const AppBarTheme(
@@ -30,13 +106,40 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const MathHomePage(),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.grey[900],
+        primaryColor: Colors.deepPurple,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.deepPurple,
+          elevation: 5,
+          titleTextStyle: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            textStyle: const TextStyle(fontSize: 16),
+          ),
+        ),
+        colorScheme: const ColorScheme.dark(
+          primary: Colors.deepPurple,
+          secondary: Colors.deepPurpleAccent,
+        ),
+      ),
+      themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      home: MathHomePage(toggleTheme: toggleTheme),
     );
   }
 }
 
 class MathHomePage extends StatefulWidget {
-  const MathHomePage({super.key});
+  final VoidCallback toggleTheme;
+
+  const MathHomePage({super.key, required this.toggleTheme});
+
   @override
   State<MathHomePage> createState() => _MathHomePageState();
 }
@@ -44,13 +147,10 @@ class MathHomePage extends StatefulWidget {
 class _MathHomePageState extends State<MathHomePage> with TickerProviderStateMixin {
   String selectedOption = 'Multiplication Table';
 
-  // Controllers
   final TextEditingController inputController = TextEditingController();
   final TextEditingController rangeController = TextEditingController();
-
   final TextEditingController percentValueController = TextEditingController();
   final TextEditingController totalValueController = TextEditingController();
-
   final TextEditingController num1Controller = TextEditingController();
   final TextEditingController num2Controller = TextEditingController();
 
@@ -66,7 +166,6 @@ class _MathHomePageState extends State<MathHomePage> with TickerProviderStateMix
     'Arithmetic',
   ];
 
-  // Animation controller for result switcher
   late AnimationController _animationController;
 
   @override
@@ -101,7 +200,6 @@ class _MathHomePageState extends State<MathHomePage> with TickerProviderStateMix
           output.add('$num × $i = ${num * i}');
         }
         break;
-
       case 'Additive Table':
         num = double.tryParse(inputController.text) ?? 0;
         range = int.tryParse(rangeController.text) ?? 10;
@@ -111,17 +209,14 @@ class _MathHomePageState extends State<MathHomePage> with TickerProviderStateMix
           output.add(sum.toStringAsFixed(0));
         }
         break;
-
       case 'Square':
         num = double.tryParse(inputController.text) ?? 0;
         output.add('Square of $num = ${num * num}');
         break;
-
       case 'Cube':
         num = double.tryParse(inputController.text) ?? 0;
         output.add('Cube of $num = ${num * num * num}');
         break;
-
       case 'Root':
         num = double.tryParse(inputController.text) ?? 0;
         if (num < 0) {
@@ -130,14 +225,12 @@ class _MathHomePageState extends State<MathHomePage> with TickerProviderStateMix
           output.add('√$num = ${sqrt(num).toStringAsFixed(3)}');
         }
         break;
-
       case 'Percentage':
         double total = double.tryParse(totalValueController.text) ?? 0;
         double percent = double.tryParse(percentValueController.text) ?? 0;
         double res = (total * percent) / 100;
         output.add('$percent% of $total = ${res.toStringAsFixed(3)}');
         break;
-
       case 'Arithmetic':
         output.add('Enter numbers and press operation button');
         break;
@@ -149,7 +242,6 @@ class _MathHomePageState extends State<MathHomePage> with TickerProviderStateMix
     });
   }
 
-  // Arithmetic Operations
   void doAddition() {
     double a = double.tryParse(num1Controller.text) ?? 0;
     double b = double.tryParse(num2Controller.text) ?? 0;
@@ -213,7 +305,6 @@ class _MathHomePageState extends State<MathHomePage> with TickerProviderStateMix
             ),
           ],
         );
-
       case 'Square':
       case 'Cube':
       case 'Root':
@@ -226,7 +317,6 @@ class _MathHomePageState extends State<MathHomePage> with TickerProviderStateMix
             prefixIcon: Icon(Icons.numbers),
           ),
         );
-
       case 'Percentage':
         return Column(
           children: [
@@ -251,7 +341,6 @@ class _MathHomePageState extends State<MathHomePage> with TickerProviderStateMix
             ),
           ],
         );
-
       case 'Arithmetic':
         return Column(
           children: [
@@ -276,7 +365,6 @@ class _MathHomePageState extends State<MathHomePage> with TickerProviderStateMix
             ),
           ],
         );
-
       default:
         return Container();
     }
@@ -317,118 +405,308 @@ class _MathHomePageState extends State<MathHomePage> with TickerProviderStateMix
     );
   }
 
+  void openCalculatorPanel() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme
+          .of(context)
+          .scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      builder: (_) => _buildCalculatorPanel(context),
+    );
+  }
+
+  Widget _buildCalculatorPanel(BuildContext context) {
+    final List<Map<String, dynamic>> tools = [
+      {'label': 'Table', 'icon': Icons.table_chart},
+      {'label': 'Square', 'icon': Icons.square_foot},
+      {'label': 'Factorial', 'icon': Icons.exposure_plus_1},
+      {'label': 'Fibonacci', 'icon': Icons.filter_9_plus},
+      {'label': 'Armstrong', 'icon': Icons.fingerprint},
+      {'label': 'Palindrome', 'icon': Icons.sync},
+      {'label': 'Multiply', 'icon': Icons.clear},
+      {'label': 'Divide', 'icon': Icons.horizontal_rule},
+      {'label': 'Dark Mode', 'icon': Icons.dark_mode},
+    ];
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery
+            .of(context)
+            .viewInsets
+            .bottom + 20,
+        left: 20,
+        right: 20,
+        top: 20,
+      ),
+      child: SizedBox(
+        height: MediaQuery
+            .of(context)
+            .size
+            .height * 0.6,
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            mainAxisSpacing: 15,
+            crossAxisSpacing: 15,
+            childAspectRatio: 1,
+          ),
+          itemCount: tools.length,
+          itemBuilder: (_, index) {
+            final item = tools[index];
+            return GestureDetector(
+              onTap: () async {
+                Navigator.pop(context);
+
+                if (item['label'] == 'Dark Mode') {
+                  widget.toggleTheme();
+                  return;
+                }
+
+                final input = await showDialog<String>(
+                  context: context,
+                  builder: (context) {
+                    final controller = TextEditingController();
+                    return AlertDialog(
+                      title: Text('Enter number for ${item['label']}'),
+                      content: TextField(
+                        controller: controller,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                            hintText: 'Enter a number'),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () =>
+                              Navigator.pop(context, controller.text),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+
+                if (input == null || input.isEmpty) return;
+                final numValue = int.tryParse(input);
+                if (numValue == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Invalid input')),
+                  );
+                  return;
+                }
+
+                String output;
+                switch (item['label']) {
+                  case 'Square':
+                    output = 'Square of $numValue is ${numValue * numValue}';
+                    break;
+                  case 'Factorial':
+                    int fact = 1;
+                    for (int i = 1; i <= numValue; i++) {
+                      fact *= i;
+                    }
+                    output = 'Factorial of $numValue is $fact';
+                    break;
+                  case 'Fibonacci':
+                    List<int> fib = [0, 1];
+                    for (int i = 2; i < numValue; i++) {
+                      fib.add(fib[i - 1] + fib[i - 2]);
+                    }
+                    output =
+                    'First $numValue Fibonacci numbers: ${fib
+                        .take(numValue)
+                        .join(', ')}';
+                    break;
+                  case 'Armstrong':
+                    int sum = 0,
+                        temp = numValue;
+                    int digits = numValue
+                        .toString()
+                        .length;
+                    while (temp > 0) {
+                      sum += pow(temp % 10, digits).toInt();
+                      temp ~/= 10;
+                    }
+                    output = numValue == sum
+                        ? '$numValue is an Armstrong number'
+                        : '$numValue is not an Armstrong number';
+                    break;
+                  case 'Palindrome':
+                    String reversed = input
+                        .split('')
+                        .reversed
+                        .join();
+                    output = input == reversed
+                        ? '$input is a Palindrome'
+                        : '$input is not a Palindrome';
+                    break;
+                  case 'Multiply':
+                    final secondInput = await _getSecondInput(
+                        context, 'Multiply');
+                    if (secondInput == null) return;
+                    final mulResult = numValue * secondInput;
+                    output = '$numValue × $secondInput = $mulResult';
+                    break;
+                  case 'Divide':
+                    final secondInput = await _getSecondInput(
+                        context, 'Divide');
+                    if (secondInput == null || secondInput == 0) {
+                      output = 'Cannot divide by zero!';
+                    } else {
+                      final divResult = numValue / secondInput;
+                      output =
+                      '$numValue ÷ $secondInput = ${divResult.toStringAsFixed(
+                          3)}';
+                    }
+                    break;
+                  case 'Table':
+                    output = 'Use main UI to generate multiplication table';
+                    break;
+                  default:
+                    output = 'Not implemented';
+                }
+
+                if (output.isNotEmpty) {
+                  _showResult(
+                      context, output); // ✅ Result shown with enhanced UI
+                }
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .primary
+                      .withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(item['icon'], size: 40, color: Colors.white),
+                    const SizedBox(height: 10),
+                    Text(
+                      item['label'],
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<int?> _getSecondInput(BuildContext context, String operation) async {
+    final TextEditingController controller = TextEditingController();
+    final result = await showDialog<int>(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: Text('Enter second number for $operation'),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(hintText: 'Second number'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, null),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final val = int.tryParse(controller.text);
+                Navigator.pop(context, val);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Enhanced Math App'),
-        centerTitle: true,
+        title: const Text('EASSY CALCULATION'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            // Dropdown with nicer style
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              decoration: BoxDecoration(
-                color: Colors.deepPurple[50],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.deepPurple, width: 1.5),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: selectedOption,
-                  isExpanded: true,
-                  icon: const Icon(Icons.arrow_drop_down_circle, color: Colors.deepPurple),
-                  items: options.map((String val) {
-                    return DropdownMenuItem(
-                      value: val,
-                      child: Text(val, style: const TextStyle(fontWeight: FontWeight.w600)),
-                    );
-                  }).toList(),
-                  onChanged: (val) {
-                    setState(() {
-                      selectedOption = val!;
-                      inputController.clear();
-                      rangeController.clear();
-                      percentValueController.clear();
-                      totalValueController.clear();
-                      num1Controller.clear();
-                      num2Controller.clear();
-                      result.clear();
-                    });
-                  },
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Input fields
-            buildInputFields(),
-
-            const SizedBox(height: 20),
-
-            // Arithmetic buttons or generate button
-            selectedOption == 'Arithmetic'
-                ? buildArithmeticButtons()
-                : ElevatedButton.icon(
-              icon: const Icon(Icons.play_arrow),
-              label: const Text('Generate'),
-              onPressed: generate,
-            ),
-
-            const SizedBox(height: 30),
-
-            // Animated result display
-            Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-                transitionBuilder: (child, animation) {
-                  return FadeTransition(opacity: animation, child: child);
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              DropdownButtonFormField<String>(
+                value: selectedOption,
+                items: options
+                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                    .toList(),
+                onChanged: (val) {
+                  if (val == null) return;
+                  setState(() {
+                    selectedOption = val;
+                    // Clear inputs and result when changing option
+                    inputController.clear();
+                    rangeController.clear();
+                    percentValueController.clear();
+                    totalValueController.clear();
+                    num1Controller.clear();
+                    num2Controller.clear();
+                    result = [];
+                  });
                 },
-                child: result.isEmpty
-                    ? Center(
-                  key: const ValueKey('empty'),
-                  child: Text(
-                    'Result will be shown here',
-                    style: TextStyle(color: Colors.grey[500], fontSize: 18),
-                  ),
-                )
-                    : ListView.builder(
-                  key: ValueKey(result.join()),
+                decoration: const InputDecoration(
+                  labelText: 'Select Operation',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.settings),
+                ),
+              ),
+              const SizedBox(height: 20),
+              buildInputFields(),
+              buildArithmeticButtons(),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: generate,
+                child: const Text('Generate'),
+              ),
+              const SizedBox(height: 20),
+              SizeTransition(
+                sizeFactor: _animationController,
+                axisAlignment: -1,
+                child: ListView.separated(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
                   itemCount: result.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple[50],
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.deepPurple.withOpacity(0.15),
-                            blurRadius: 6,
-                            offset: const Offset(2, 2),
-                          )
-                        ],
-                      ),
-                      child: Text(
-                        result[index],
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.deepPurple,
-                        ),
-                      ),
+                  separatorBuilder: (_, __) => const Divider(),
+                  itemBuilder: (_, index) {
+                    return Text(
+                      result[index],
+                      style: const TextStyle(fontSize: 18),
                     );
                   },
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Open Calculator Panel',
+        onPressed: openCalculatorPanel,
+        child: const Icon(Icons.calculate),
       ),
     );
   }
